@@ -1,10 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Map Viewer";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>HI</p>
-    <div id="mapView" style="width: 100%; height: 400px;"></div>
+<div id="mapView"
+     class="map-view"
+     role="application"
+     aria-label="Interactive WebGIS map">
 </div>
-<script type="module" src="~/js/map.js"></script>
+
+@section Scripts {
+    <script type="module" src="~/js/map.js"></script>
+}
