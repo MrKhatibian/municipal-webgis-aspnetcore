@@ -7,4 +7,15 @@
     <RootNamespace>municipal_webgis_mvc</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="wwwroot\lib\gis\5.1\**" />
+    <Compile Remove="wwwroot\lib\gis\calcite-components\**" />
+    <Content Remove="wwwroot\lib\gis\5.1\**" />
+    <Content Remove="wwwroot\lib\gis\calcite-components\**" />
+    <EmbeddedResource Remove="wwwroot\lib\gis\5.1\**" />
+    <EmbeddedResource Remove="wwwroot\lib\gis\calcite-components\**" />
+    <None Remove="wwwroot\lib\gis\5.1\**" />
+    <None Remove="wwwroot\lib\gis\calcite-components\**" />
+  </ItemGroup>
+
 </Project>
