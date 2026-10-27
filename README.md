@@ -20,8 +20,6 @@ This project explores the development of web-based GIS applications using the .N
 - Explore the integration of GIS services into web applications.
 - Build a maintainable foundation for a municipal WebGIS.
 
-## Getting Started
-
 ## Prerequisites
 
 - .NET 10 SDK
