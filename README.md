@@ -20,35 +20,80 @@ This project explores the development of web-based GIS applications using the .N
 - Explore the integration of GIS services into web applications.
 - Build a maintainable foundation for a municipal WebGIS.
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- .NET 10 SDK
+- PowerShell (Windows)
+- Git
 
-- .NET SDK compatible with the project
-- Node.js and npm
-- Visual Studio or another compatible development environment
+## Clone the Repository
 
-### Setup
+```powershell
+git clone https://github.com/MrKhatibian/municipal-webgis-aspnetcore.git
+cd municipal-webgis-aspnetcore
+```
 
-1. Clone the repository:
+## Set Up the Local ArcGIS Maps SDK
 
-   ```bash
-   git clone https://github.com/MrKhatibian/webgis-mvc.git
-   ```
+The repository includes the ArcGIS Maps SDK 5.1 ZIP archive at:
 
-2. Open the solution in Visual Studio.
+```text
+wwwroot/lib/gis/arcgis_js_v51_api.zip
+```
 
-3. Restore the .NET dependencies.
+The extracted SDK files are not committed to the repository. Extract the archive into `wwwroot/lib/gis/` before running the application.
 
-4. Install npm dependencies if a `package.json` file is present:
+From the repository root, run:
 
-   ```bash
-   npm install
-   ```
+```powershell
+tar -xf .\wwwroot\lib\gis\arcgis_js_v51_api.zip -C .\wwwroot\lib\gis\
+```
 
-5. Review the project configuration and run the ASP.NET Core application.
+The expected directory structure includes:
 
-> Note: The exact setup steps depend on the current project configuration. GIS services or credentials may need to be configured separately.
+```text
+wwwroot/lib/gis/
+├── arcgis_js_v51_api.zip
+└── 5.1/
+    ├── @arcgis/core/
+    │   ├── Map.js
+    │   └── views/MapView.js
+    └── esri/themes/light/main.css
+```
+
+Verify that the required files exist:
+
+```powershell
+Test-Path .\wwwroot\lib\gis\5.1\@arcgis\core\Map.js
+Test-Path .\wwwroot\lib\gis\5.1\@arcgis\core\views\MapView.js
+Test-Path .\wwwroot\lib\gis\5.1\esri\themes\light\main.css
+```
+
+All three commands should return `True`.
+
+## Build and Run
+
+Restore dependencies and build the application:
+
+```powershell
+dotnet restore
+dotnet build
+```
+
+Run the application:
+
+```powershell
+dotnet run
+```
+
+Open the HTTPS URL displayed in the terminal and verify that the map loads successfully.
+
+## Notes
+
+- Extract the SDK locally after cloning; do not commit the extracted SDK directory.
+- Keep the SDK ZIP archive in the repository as the distribution source for local setup.
+- Preserve the directory structure expected by the imports in `wwwroot/js/map.js` and the stylesheet reference in `Views/Shared/_Layout.cshtml`.
+- If the SDK archive is updated, repeat the extraction and verification steps.
 
 ## Project Status
 
