@@ -6,6 +6,8 @@ import MapView from "../lib/gis/5.1/@arcgis/core/views/MapView.js";
 import FeatureLayer from "../lib/gis/5.1/@arcgis/core/layers/FeatureLayer.js";
 
 import Home from "../lib/gis/5.1/@arcgis/core/widgets/Home.js";
+import LayerList from "../lib/gis/5.1/@arcgis/core/widgets/LayerList.js";
+import Expand from "../lib/gis/5.1/@arcgis/core/widgets/Expand.js";
 
 // Create Map
 const map = new Map({
@@ -72,8 +74,24 @@ async function initializeMap() {
                 targetGeometry: initialExtent,
             },
         });
-
         view.ui.add(homeWidget, "top-left");
+        
+
+        // Add LayerList Widget
+        const layerListWidget = new LayerList({
+            view,            
+        });
+
+        // Add LayerList Expand
+        const layerListExpand = new Expand({
+            view,
+            content: layerListWidget,
+            expandIcon: "layers",
+            expandTooltip: "Layer List",
+            group: "top-right",
+        });        
+        view.ui.add(layerListExpand, "top-right");
+
 
     } catch (error) {
         console.error("Map initialization failed:", error);
