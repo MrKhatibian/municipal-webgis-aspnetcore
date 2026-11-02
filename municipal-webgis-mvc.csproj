@@ -18,4 +18,8 @@
     <None Remove="wwwroot\lib\gis\calcite-components\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\fonts\vazirmatn\" />
+  </ItemGroup>
+
 </Project>
