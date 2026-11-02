@@ -8,6 +8,36 @@
      aria-label="Interactive WebGIS map">
 </div>
 
+<!-- Feature Information Panel -->
+<aside id="featureInfoPanel"
+       class="feature-info-panel"
+       aria-labelledby="featureInfoTitle"
+       aria-live="polite"
+       hidden>
+
+    <div class="feature-info-header">
+
+        <div>
+            <h5 id="featureInfoTitle">اطلاعات عارضه</h5>
+            <span id="featureLayerTitle" class="feature-layer-title">
+                نام لایه
+            </span>
+        </div>
+
+        <button id="closeFeatureInfoButton"
+                type="button"
+                class="btn-close"
+                aria-label="بستن پنل">
+        </button>
+
+    </div>
+
+    <div id="featureInfoContent" class="feature-info-content">
+        <!-- Feature attributes will be rendered here -->
+    </div>
+
+</aside>
+
 @section Scripts {
-    <script type="module" src="~/js/map.js"></script>
+    <script type="module" src="~/js/map.js"></script>   
 }
