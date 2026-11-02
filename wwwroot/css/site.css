@@ -2,6 +2,20 @@ html {
     height: 100%;
     font-size: 14px;
 }
+/* Vazirmatn Font */
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("/fonts/vazirmatn/Vazirmatn[wght].woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Global Font Configuration */
+:root {
+    --bs-font-sans-serif: "Vazirmatn", sans-serif;
+    --bs-body-font-family: "Vazirmatn", sans-serif;
+}
 
 @media (min-width: 768px) {
     html {
