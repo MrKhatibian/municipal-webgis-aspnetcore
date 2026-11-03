@@ -8,6 +8,77 @@
      aria-label="Interactive WebGIS map">
 </div>
 
+<!-- Feature Information Panel -->
+<aside id="featureInfoPanel"
+       class="feature-info-panel"
+       aria-labelledby="featureInfoTitle"
+       aria-live="polite"
+       hidden>
+
+    <!-- Panel Header -->
+    <div class="feature-panel-header">
+
+        <div class="feature-panel-header-icon">
+            <i class="bi bi-map"></i>
+        </div>
+
+        <div class="feature-panel-header-title">
+            <h5 id="featureInfoTitle">
+                اطلاعات عارضه
+            </h5>
+            <span id="featureInfoSubTitle"
+                  class="feature-panel-subtitle">
+                اطلاعات عارضه انتخاب‌شده
+            </span>
+        </div>
+
+        <button id="closeFeatureInfo"
+                type="button"
+                class="feature-panel-close"
+                aria-label="بستن پنل">
+            <i class="bi bi-x-lg"></i>           
+        </button>
+
+    </div>
+
+    <!-- Panel Body -->
+    <div class="feature-panel-body">
+
+        <!-- Property Summary -->
+        <div class="property-summary-card">
+
+            <div class="property-summary-content">
+
+                <span class="property-summary-label">
+                    لایه انتخاب‌شده
+                </span>
+
+                <h4 id="featureLayerTitle">
+                    قطعه عارضه
+                </h4>
+
+                <div class="unique-code">
+                    <span id="uniqCodeLabel">شناسه عارضه:</span>
+                    <strong id="uniqCodeName">—</strong>
+                </div>
+
+            </div>
+
+            <div class="property-summary-icon">                
+                <i class="bi bi-map-fill"></i>
+            </div>
+
+        </div>
+
+        <!-- Feature Attributes -->
+        <div id="featureInfoContent"
+             class="feature-info-content">
+        </div>
+
+    </div>
+
+</aside>
+
 @section Scripts {
-    <script type="module" src="~/js/map.js"></script>
+    <script type="module" src="~/js/map.js"></script>   
 }
