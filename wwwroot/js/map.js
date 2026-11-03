@@ -28,6 +28,8 @@ function createFeatureLayer(layerConfig) {
         url: `${mapConfig.services.featureServer.url}/${layerConfig.id}`,
         title: layerConfig.title,
         outFields: layerConfig.outFields,
+        propertyCode: layerConfig.propertyCodeFeild,
+        featureInfoGroups: layerConfig.featureInfoGroups
     });
 }
 
@@ -53,35 +55,136 @@ const featureInfoPanel = document.getElementById("featureInfoPanel");
 const featureLayerTitle = document.getElementById("featureLayerTitle");
 const featureInfoContent = document.getElementById("featureInfoContent");
 
+
+// Feature Information Configuration
+const featureInfoGroups = landParcelLayer.featureInfoGroups;
+
+// Get Attribute Value
+function getAttributeValue(attributes, fieldName) {
+
+    const value = attributes[fieldName];
+
+    if (value === null || value === undefined || value === "") {
+        return "—";
+    }
+
+    return value;
+}
+
+// Create Attribute Row
+function createFeatureInfoRow(labelText, valueText) {
+
+    const row = document.createElement("div");
+    row.className = "feature-info-row";
+
+    const label = document.createElement("div");
+    label.className = "feature-info-label";
+    label.textContent = labelText;
+
+    const value = document.createElement("div");
+    value.className = "feature-info-value";
+    value.textContent = valueText;
+
+    row.append(label, value);
+
+    return row;
+}
+
+// Create Attribute Group
+function createFeatureInfoGroup(group, attributes) {
+
+    const groupElement = document.createElement("section");
+    groupElement.className = "feature-info-group";
+
+    const header = document.createElement("div");
+    header.className = "feature-info-group-header";
+
+    const title = document.createElement("div");
+    title.className = "feature-info-group-title";
+
+    const icon = document.createElement("i");
+    icon.className = `bi ${group.icon}`;
+
+    const titleText = document.createElement("span");
+    titleText.textContent = group.title;
+
+    title.append(icon, titleText);
+
+    header.append(title);
+
+    const body = document.createElement("div");
+    body.className = "feature-info-group-body";
+
+    let hasVisibleFields = false;
+
+    group.fields.forEach(field => {
+
+        if (!Object.hasOwn(attributes, field.name)) {
+            return;
+        }
+
+        const value = getAttributeValue(
+            attributes,
+            field.name
+        );
+
+        body.append(
+            createFeatureInfoRow(field.label, String(value))
+        );
+
+        hasVisibleFields = true;
+    });
+
+    if (!hasVisibleFields) {
+        return null;
+    }
+
+    groupElement.append(header, body);
+
+    return groupElement;
+}
+
 // Display Feature Information
 function showFeatureInfo(feature, layerTitle) {
+
+    const attributes = feature.attributes;
 
     // Set Layer Title
     featureLayerTitle.textContent = layerTitle;
 
+    // Set Property Code
+    const propertyCode = document.getElementById("propertyCode");
+
+    propertyCode.textContent = getAttributeValue(
+        attributes,
+        landParcelLayer.propertyCode
+    );
+
     // Clear Previous Information
     featureInfoContent.replaceChildren();
 
-    // Get Feature Attributes
-    const attributes = feature.attributes;
+    // Create Attribute Groups
+    featureInfoGroups.forEach(group => {
 
-    // Create an HTML row for each attribute
-    Object.entries(attributes).forEach(([fieldName, fieldValue]) => {
+        const groupElement = createFeatureInfoGroup(
+            group,
+            attributes
+        );
 
-        const row = document.createElement("div");
-        row.className = "feature-info-row";
-
-        const label = document.createElement("div");
-        label.className = "feature-info-label";
-        label.textContent = fieldName;
-
-        const value = document.createElement("div");
-        value.className = "feature-info-value";
-        value.textContent = fieldValue ?? "—";
-
-        row.append(label, value);
-        featureInfoContent.append(row);
+        if (groupElement) {
+            featureInfoContent.append(groupElement);
+        }
     });
+
+    // Show Empty State
+    if (featureInfoContent.childElementCount === 0) {
+
+        const emptyMessage = document.createElement("div");
+        emptyMessage.className = "feature-info-empty";
+        emptyMessage.textContent = "اطلاعاتی برای نمایش وجود ندارد.";
+
+        featureInfoContent.append(emptyMessage);
+    }
 
 // Show Information Panel
     featureInfoPanel.hidden = false;
@@ -141,7 +244,7 @@ async function identifyFeature(event) {
 
         // Highlight Selected Feature
         selectedHighlight = layerView.highlight(feature);
-
+        
         // Display Feature Information
         showFeatureInfo(feature, landParcelLayer.title);
 
@@ -205,7 +308,7 @@ async function initializeMap() {
         view.ui.add(layerListExpand, "top-right");
 
         // Feature Information Panel Close Button
-        const closeFeatureInfoButton = document.getElementById("closeFeatureInfoButton");
+        const closeFeatureInfoButton = document.getElementById("closeFeatureInfo");
 
         closeFeatureInfoButton.addEventListener("click", () => {
             clearSelectedFeature();

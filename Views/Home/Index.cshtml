@@ -15,25 +15,66 @@
        aria-live="polite"
        hidden>
 
-    <div class="feature-info-header">
+    <!-- Panel Header -->
+    <div class="feature-panel-header">
 
-        <div>
-            <h5 id="featureInfoTitle">اطلاعات عارضه</h5>
-            <span id="featureLayerTitle" class="feature-layer-title">
-                نام لایه
-            </span>
+        <div class="feature-panel-header-icon">
+            <i class="bi bi-map"></i>
         </div>
 
-        <button id="closeFeatureInfoButton"
+        <div class="feature-panel-header-title">
+            <span class="feature-panel-subtitle">
+                اطلاعات ملک انتخاب‌شده
+            </span>
+
+            <h5 id="featureInfoTitle">
+                اطلاعات عارضه
+            </h5>
+        </div>
+
+        <button id="closeFeatureInfo"
                 type="button"
-                class="btn-close"
+                class="feature-panel-close"
                 aria-label="بستن پنل">
+            <i class="bi bi-x-lg"></i>           
         </button>
 
     </div>
 
-    <div id="featureInfoContent" class="feature-info-content">
-        <!-- Feature attributes will be rendered here -->
+    <!-- Panel Body -->
+    <div class="feature-panel-body">
+
+        <!-- Property Summary -->
+        <div class="property-summary-card">
+
+            <div class="property-summary-content">
+
+                <span class="property-summary-label">
+                    لایه انتخاب‌شده
+                </span>
+
+                <h4 id="featureLayerTitle">
+                    قطعه عرصه
+                </h4>
+
+                <div class="property-code">
+                    <span>کد نوسازی:</span>
+                    <strong id="propertyCode">—</strong>
+                </div>
+
+            </div>
+
+            <div class="property-summary-icon">                
+                <i class="bi bi-map-fill"></i>
+            </div>
+
+        </div>
+
+        <!-- Feature Attributes -->
+        <div id="featureInfoContent"
+             class="feature-info-content">
+        </div>
+
     </div>
 
 </aside>

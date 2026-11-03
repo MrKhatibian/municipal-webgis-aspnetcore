@@ -124,6 +124,55 @@ const mapConfig = {
             id: 4,
             title: "عرصه",
             outFields: ["*"],
+
+            // Feature Uniq Code
+            propertyCodeFeild: "Code_nosazi",
+
+            // Display Feature Information
+            featureInfoGroups: [
+                {
+                    title: "اطلاعات شناسایی",
+                    icon: "bi-person",
+                    fields: [
+                        {
+                            name: "Code_nosazi",
+                            label: "کد نوسازی",
+                        },
+                        {
+                            name: "Karbari",
+                            label: "کاربری",
+                        },
+                        {
+                            name: "OBJECTID",
+                            label: "شناسه عارضه",
+                        },
+                    ],
+                },
+                {
+                    title: "اطلاعات هندسی",
+                    icon: "bi-rulers",
+                    fields: [
+                        {
+                            name: "Masahat",
+                            label: "مساحت",
+                        },
+                        {
+                            name: "Frequency",
+                            label: "محیط",
+                        },
+                    ],
+                },
+                {
+                    title: "اطلاعات شهرسازی",
+                    icon: "bi-building",
+                    fields: [
+                        {
+                            name: "Parvaneh",
+                            label: "قیمت پایه منطقه",
+                        },
+                    ],
+                },
+            ],
         },
 
         // Urban Area Boundary Layer (محدوده شهر)
@@ -131,6 +180,23 @@ const mapConfig = {
             id: 2,
             title: "محدوده شهر",
             outFields: ["*"],
+
+            // Feature Uniq Code
+            propertyCodeFeild: "OBJECTID",
+
+            // Display Feature Information
+            featureInfoGroups: [
+                {
+                    title: "اطلاعات شناسایی",
+                    icon: "bi-person",
+                    fields: [
+                        {
+                            name: "OBJECTID",
+                            label: "شناسه عارضه",
+                        },
+                    ],
+                },
+            ],
         },
 
         // Example: Building Layer (اعیان)
@@ -138,6 +204,23 @@ const mapConfig = {
             id: 0,
             title: "اعیان",
             outFields: ["*"],
+
+            // Feature Uniq Code
+            propertyCodeFeild: "OBJECTID",
+
+            // Display Feature Information
+            featureInfoGroups: [
+                {
+                    title: "اطلاعات شناسایی",
+                    icon: "bi-person",
+                    fields: [
+                        {
+                            name: "OBJECTID",
+                            label: "شناسه عارضه",
+                        },
+                    ],
+                },
+            ],
         },
 
         // Example: Detailed Plan Layer (طرح تفصیلی)
@@ -145,6 +228,23 @@ const mapConfig = {
             id: 3,
             title: "طرح تفصیلی",
             outFields: ["*"],
+
+            // Feature Uniq Code
+            propertyCodeFeild: "OBJECTID",
+
+            // Display Feature Information
+            featureInfoGroups: [
+                {
+                    title: "اطلاعات شناسایی",
+                    icon: "bi-person",
+                    fields: [
+                        {
+                            name: "OBJECTID",
+                            label: "شناسه عارضه",
+                        },
+                    ],
+                },
+            ],
         },
     },
 };
