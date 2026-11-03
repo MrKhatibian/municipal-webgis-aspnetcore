@@ -27,9 +27,7 @@ function createFeatureLayer(layerConfig) {
     return new FeatureLayer({
         url: `${mapConfig.services.featureServer.url}/${layerConfig.id}`,
         title: layerConfig.title,
-        outFields: layerConfig.outFields,
-        propertyCode: layerConfig.propertyCodeFeild,
-        featureInfoGroups: layerConfig.featureInfoGroups
+        outFields: layerConfig.outFields,                
     });
 }
 
@@ -48,16 +46,24 @@ map.addMany([
     landParcelLayer,
 ]);
 
+// Identify Layers
+const identifyLayers = [
+    {
+        layer: landParcelLayer,
+        layerConfig: mapConfig.layers.landParcel
+    },
+    {
+        layer: urbanAreaBoundaryLayer,
+        layerConfig: mapConfig.layers.urbanAreaBoundary
+    }
+];
+
 let selectedFeature, selectedHighlight, selectedLayerView = null;
 
 // Get Feature Information Panel Elements
 const featureInfoPanel = document.getElementById("featureInfoPanel");
 const featureLayerTitle = document.getElementById("featureLayerTitle");
 const featureInfoContent = document.getElementById("featureInfoContent");
-
-
-// Feature Information Configuration
-const featureInfoGroups = landParcelLayer.featureInfoGroups;
 
 // Get Attribute Value
 function getAttributeValue(attributes, fieldName) {
@@ -145,26 +151,34 @@ function createFeatureInfoGroup(group, attributes) {
 }
 
 // Display Feature Information
-function showFeatureInfo(feature, layerTitle) {
+function showFeatureInfo(feature, layerConfig) {
 
     const attributes = feature.attributes;
 
+    // Set Layer Subtitle
+    const featureInfoSubTitle = document.getElementById("featureInfoSubTitle");
+    featureInfoSubTitle.textContent = `اطلاعات ${layerConfig.title} انتخاب‌شده`;
+
     // Set Layer Title
-    featureLayerTitle.textContent = layerTitle;
+    featureLayerTitle.textContent = layerConfig.title;
 
-    // Set Property Code
-    const propertyCode = document.getElementById("propertyCode");
+    // Set Unique Code Key
+    const uniqCodeLabel = document.getElementById("uniqCodeLabel");
+    uniqCodeLabel.textContent = `${layerConfig.featureUniqCodeFeild.label}:`;
 
-    propertyCode.textContent = getAttributeValue(
+    // Set Unique Code Value
+    const uniqCode = document.getElementById("uniqCodeName");
+
+    uniqCode.textContent = getAttributeValue(
         attributes,
-        landParcelLayer.propertyCode
+        layerConfig.featureUniqCodeFeild.name
     );
 
     // Clear Previous Information
     featureInfoContent.replaceChildren();
 
     // Create Attribute Groups
-    featureInfoGroups.forEach(group => {
+    layerConfig.featureInfoGroups.forEach(group => {
 
         const groupElement = createFeatureInfoGroup(
             group,
@@ -212,17 +226,21 @@ function clearSelectedFeature() {
 
 // Identify Feature
 async function identifyFeature(event) {
-    try {
+    try {        
         const response = await view.hitTest(event, {
-            include: [
-                landParcelLayer
-            ]
+            include: identifyLayers.map(item => item.layer)
         });
 
         const result = response.results.find(
-            item =>
-                item.type === "graphic" &&
-                item.graphic.layer === landParcelLayer
+            item => {                
+                if (item.type !== "graphic") {
+                    return false;
+                };
+
+                return identifyLayers.some(
+                    identifyLayer => identifyLayer.layer === item.graphic.layer
+                );
+            }
         );
 
         if (!result) {
@@ -232,11 +250,21 @@ async function identifyFeature(event) {
 
         const feature = result.graphic;
 
+        // Find Selected Feature Configuration
+        const selectedLayer = identifyLayers.find(
+            item => item.layer === feature.layer
+        )
+
+        if (!selectedLayer) {
+            clearSelectedFeature();
+            return;
+        }
+
         // Clear Pervious Feature
         clearSelectedFeature();
 
         // Get LayerView
-        const layerView = await view.whenLayerView(landParcelLayer);
+        const layerView = await view.whenLayerView(selectedLayer.layer);
 
         // Store Selected Feature
         selectedFeature = feature;
@@ -246,8 +274,9 @@ async function identifyFeature(event) {
         selectedHighlight = layerView.highlight(feature);
         
         // Display Feature Information
-        showFeatureInfo(feature, landParcelLayer.title);
+        showFeatureInfo(feature, selectedLayer.layerConfig);
 
+        console.log("selected Layer: ", selectedLayer.layerConfig.title);
         console.log("Selected Feature:", feature);
         console.log("Feature Attributes:", feature.attributes);
 

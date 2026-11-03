@@ -125,8 +125,11 @@ const mapConfig = {
             title: "عرصه",
             outFields: ["*"],
 
-            // Feature Uniq Code
-            propertyCodeFeild: "Code_nosazi",
+            // Feature Unique Code
+            featureUniqCodeFeild: {
+                name: "Code_nosazi",
+                label: "کد نوسازی",
+            },
 
             // Display Feature Information
             featureInfoGroups: [
@@ -181,8 +184,11 @@ const mapConfig = {
             title: "محدوده شهر",
             outFields: ["*"],
 
-            // Feature Uniq Code
-            propertyCodeFeild: "OBJECTID",
+            // Feature Unique Code
+            featureUniqCodeFeild: {
+                name: "OBJECTID",
+                label: "شناسه عارضه",
+            },
 
             // Display Feature Information
             featureInfoGroups: [
@@ -205,8 +211,11 @@ const mapConfig = {
             title: "اعیان",
             outFields: ["*"],
 
-            // Feature Uniq Code
-            propertyCodeFeild: "OBJECTID",
+            // Feature Unique Code
+            featureUniqCodeFeild: {
+                name: "OBJECTID",
+                label: "شناسه عارضه",
+            },
 
             // Display Feature Information
             featureInfoGroups: [
@@ -229,8 +238,11 @@ const mapConfig = {
             title: "طرح تفصیلی",
             outFields: ["*"],
 
-            // Feature Uniq Code
-            propertyCodeFeild: "OBJECTID",
+            // Feature Unique Code
+            featureUniqCodeFeild: {
+                name: "OBJECTID",
+                label: "شناسه عارضه",
+            },
 
             // Display Feature Information
             featureInfoGroups: [
