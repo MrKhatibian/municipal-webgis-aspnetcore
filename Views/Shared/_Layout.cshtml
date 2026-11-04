@@ -4,21 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>WebGIS Map Viewer</title>
-
-    <script type="importmap"></script>
+    <title>WebGIS Map Viewer</title>    
 
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
 
     <link rel="stylesheet"
-          href="~/lib/gis/5.1/esri/themes/light/main.css" />
+          href="~/lib/bootstrap/dist/icons/bootstrap-icons.min.css" />
 
     <link rel="stylesheet"
           href="~/css/site.css"
-          asp-append-version="true" />
-          
-    <link href="~/lib/bootstrap/dist/icons/bootstrap-icons.min.css" rel="stylesheet" />
+          asp-append-version="true" />          
+    
+    <!-- Esri Map Components (self-hosted; defines $arcgis and the arcgis-* / calcite-* elements) -->
+    <script type="module"
+            src="~/lib/gis/5.1/index.js"></script>
 </head>
 
 <body>

@@ -1,361 +1,126 @@
-﻿
-import { mapConfig } from "../js/mapConfig.local.js";
+﻿import { mapConfig } from "../js/mapConfig.local.js";
 
-import Map from "../lib/gis/5.1/@arcgis/core/Map.js";
-import MapView from "../lib/gis/5.1/@arcgis/core/views/MapView.js";
-import FeatureLayer from "../lib/gis/5.1/@arcgis/core/layers/FeatureLayer.js";
+const [FeatureLayer, LayerSearchSource, Viewpoint] = await $arcgis.import([
+    "@arcgis/core/layers/FeatureLayer.js",
+    "@arcgis/core/widgets/Search/LayerSearchSource.js",
+    "@arcgis/core/Viewpoint.js",
+]);
 
-import Home from "../lib/gis/5.1/@arcgis/core/widgets/Home.js";
-import LayerList from "../lib/gis/5.1/@arcgis/core/widgets/LayerList.js";
-import Expand from "../lib/gis/5.1/@arcgis/core/widgets/Expand.js";
+// DOM references
+const viewElement = document.getElementById("mapView");
+const homeElement = document.getElementById("homeWidget");
+const searchElement = document.getElementById("parcelSearch");
 
-// Create Map
-const map = new Map({
-    basemap: mapConfig.map.basemap,
-});
+// Map configuration (set before the component finishes initializing)
+viewElement.basemap = mapConfig.map.basemap;
+viewElement.center = mapConfig.view.center;
+viewElement.zoom = mapConfig.view.zoom;
 
-// Create MapView
-const view = new MapView({
-    container: mapConfig.view.container,
-    map: map,
-    center: mapConfig.view.center,
-    zoom: mapConfig.view.zoom,
-});
+// Popup template (built from mapConfig.featureInfoGroups)
+function buildPopupTemplate(layerConfig) {
+    const { name, label } = layerConfig.featureUniqCodeFeild;
 
-// Create FeatureLayer
+    return {
+        title: `${layerConfig.title} (${label}: \u2066{${name}}\u2069)`, // for LtR
+        outFields: layerConfig.outFields,
+        content: layerConfig.featureInfoGroups.map(group => ({
+            type: "fields",
+            title: group.title,
+            fieldInfos: group.fields.map(field => ({
+                fieldName: field.name,
+                label: field.label,
+                format: field.format,
+            })),
+        })),
+    };
+}
+
+// Operational layers
 function createFeatureLayer(layerConfig) {
     return new FeatureLayer({
         url: `${mapConfig.services.featureServer.url}/${layerConfig.id}`,
         title: layerConfig.title,
-        outFields: layerConfig.outFields,                
+        outFields: layerConfig.outFields,
+        popupTemplate: buildPopupTemplate(layerConfig),
     });
 }
 
-// Create Operational Layers
-const landParcelLayer = createFeatureLayer(
-    mapConfig.layers.landParcel
-);
+const landParcelLayer = createFeatureLayer(mapConfig.layers.landParcel);
+const urbanAreaBoundaryLayer = createFeatureLayer(mapConfig.layers.urbanAreaBoundary);
 
-const urbanAreaBoundaryLayer = createFeatureLayer(
-    mapConfig.layers.urbanAreaBoundary
-);
+// Drawing order: first item is at the bottom
+const operationalLayers = [urbanAreaBoundaryLayer, landParcelLayer];
 
-// Add Operational Layers
-map.addMany([
-    urbanAreaBoundaryLayer,
-    landParcelLayer,
-]);
-
-// Identify Layers
-const identifyLayers = [
-    {
-        layer: landParcelLayer,
-        layerConfig: mapConfig.layers.landParcel
-    },
-    {
-        layer: urbanAreaBoundaryLayer,
-        layerConfig: mapConfig.layers.urbanAreaBoundary
-    }
-];
-
-let selectedFeature, selectedHighlight, selectedLayerView = null;
-
-// Get Feature Information Panel Elements
-const featureInfoPanel = document.getElementById("featureInfoPanel");
-const featureLayerTitle = document.getElementById("featureLayerTitle");
-const featureInfoContent = document.getElementById("featureInfoContent");
-
-// Get Attribute Value
-function getAttributeValue(attributes, fieldName) {
-
-    const value = attributes[fieldName];
-
-    if (value === null || value === undefined || value === "") {
-        return "—";
-    }
-
-    return value;
+// Initialization steps
+function addOperationalLayers() {
+    // The component already owns the Map instance
+    viewElement.map.addMany(operationalLayers);
 }
 
-// Create Attribute Row
-function createFeatureInfoRow(labelText, valueText) {
-
-    const row = document.createElement("div");
-    row.className = "feature-info-row";
-
-    const label = document.createElement("div");
-    label.className = "feature-info-label";
-    label.textContent = labelText;
-
-    const value = document.createElement("div");
-    value.className = "feature-info-value";
-    value.textContent = valueText;
-
-    row.append(label, value);
-
-    return row;
-}
-
-// Create Attribute Group
-function createFeatureInfoGroup(group, attributes) {
-
-    const groupElement = document.createElement("section");
-    groupElement.className = "feature-info-group";
-
-    const header = document.createElement("div");
-    header.className = "feature-info-group-header";
-
-    const title = document.createElement("div");
-    title.className = "feature-info-group-title";
-
-    const icon = document.createElement("i");
-    icon.className = `bi ${group.icon}`;
-
-    const titleText = document.createElement("span");
-    titleText.textContent = group.title;
-
-    title.append(icon, titleText);
-
-    header.append(title);
-
-    const body = document.createElement("div");
-    body.className = "feature-info-group-body";
-
-    let hasVisibleFields = false;
-
-    group.fields.forEach(field => {
-
-        if (!Object.hasOwn(attributes, field.name)) {
-            return;
-        }
-
-        const value = getAttributeValue(
-            attributes,
-            field.name
-        );
-
-        body.append(
-            createFeatureInfoRow(field.label, String(value))
-        );
-
-        hasVisibleFields = true;
-    });
-
-    if (!hasVisibleFields) {
-        return null;
-    }
-
-    groupElement.append(header, body);
-
-    return groupElement;
-}
-
-// Display Feature Information
-function showFeatureInfo(feature, layerConfig) {
-
-    const attributes = feature.attributes;
-
-    // Set Layer Subtitle
-    const featureInfoSubTitle = document.getElementById("featureInfoSubTitle");
-    featureInfoSubTitle.textContent = `اطلاعات ${layerConfig.title} انتخاب‌شده`;
-
-    // Set Layer Title
-    featureLayerTitle.textContent = layerConfig.title;
-
-    // Set Unique Code Key
-    const uniqCodeLabel = document.getElementById("uniqCodeLabel");
-    uniqCodeLabel.textContent = `${layerConfig.featureUniqCodeFeild.label}:`;
-
-    // Set Unique Code Value
-    const uniqCode = document.getElementById("uniqCodeName");
-
-    uniqCode.textContent = getAttributeValue(
-        attributes,
-        layerConfig.featureUniqCodeFeild.name
+async function loadOperationalLayers() {
+    // allSettled: one failing layer must not break the whole map
+    const results = await Promise.allSettled(
+        operationalLayers.map(layer => layer.load())
     );
 
-    // Clear Previous Information
-    featureInfoContent.replaceChildren();
-
-    // Create Attribute Groups
-    layerConfig.featureInfoGroups.forEach(group => {
-
-        const groupElement = createFeatureInfoGroup(
-            group,
-            attributes
-        );
-
-        if (groupElement) {
-            featureInfoContent.append(groupElement);
+    results.forEach((result, index) => {
+        if (result.status === "rejected") {
+            console.error(
+                `Layer "${operationalLayers[index].title}" failed to load:`,
+                result.reason
+            );
         }
     });
-
-    // Show Empty State
-    if (featureInfoContent.childElementCount === 0) {
-
-        const emptyMessage = document.createElement("div");
-        emptyMessage.className = "feature-info-empty";
-        emptyMessage.textContent = "اطلاعاتی برای نمایش وجود ندارد.";
-
-        featureInfoContent.append(emptyMessage);
-    }
-
-// Show Information Panel
-    featureInfoPanel.hidden = false;
 }
 
-// Clear Selected Feature
-function clearSelectedFeature() {
+async function setInitialExtent() {
+    const initialExtent = landParcelLayer.fullExtent;
 
-    // Remove Previous Highlight
-    if (selectedHighlight) {
-        selectedHighlight.remove();
-        selectedHighlight = null;
+    if (!initialExtent) {
+        return;
     }
 
-    // Reset Selection State
-    selectedFeature = null;
-    selectedLayerView = null;
+    await viewElement.goTo(initialExtent, { animate: false });
 
-    // Clear and Hide Information Panel
-    featureInfoContent.replaceChildren();
-    featureInfoPanel.hidden = true;
-
-    console.log("Feature selection cleared.");
+    // Home button returns to the same extent
+    homeElement.viewpoint = new Viewpoint({
+        targetGeometry: initialExtent,
+    });
 }
 
-// Identify Feature
-async function identifyFeature(event) {
-    try {        
-        const response = await view.hitTest(event, {
-            include: identifyLayers.map(item => item.layer)
-        });
-
-        const result = response.results.find(
-            item => {                
-                if (item.type !== "graphic") {
-                    return false;
-                };
-
-                return identifyLayers.some(
-                    identifyLayer => identifyLayer.layer === item.graphic.layer
-                );
-            }
-        );
-
-        if (!result) {
-            clearSelectedFeature();
-            return;
-        }
-
-        const feature = result.graphic;
-
-        // Find Selected Feature Configuration
-        const selectedLayer = identifyLayers.find(
-            item => item.layer === feature.layer
-        )
-
-        if (!selectedLayer) {
-            clearSelectedFeature();
-            return;
-        }
-
-        // Clear Pervious Feature
-        clearSelectedFeature();
-
-        // Get LayerView
-        const layerView = await view.whenLayerView(selectedLayer.layer);
-
-        // Store Selected Feature
-        selectedFeature = feature;
-        selectedLayerView = layerView;
-
-        // Highlight Selected Feature
-        selectedHighlight = layerView.highlight(feature);
-        
-        // Display Feature Information
-        showFeatureInfo(feature, selectedLayer.layerConfig);
-
-        console.log("selected Layer: ", selectedLayer.layerConfig.title);
-        console.log("Selected Feature:", feature);
-        console.log("Feature Attributes:", feature.attributes);
-
-    } catch (error) {
-
-        console.error(
-            "Feature identification failed:",
-            error
-        );
-
-    }
+function configureSearch() {
+    // Sources are objects, so they are set from JS.
+    // Selecting a result zooms to it and opens the layer's popup.
+    searchElement.includeDefaultSources = false;
+    searchElement.searchAllEnabled = false;
+    searchElement.sources = [
+        new LayerSearchSource({
+            layer: landParcelLayer,
+            searchFields: ["Code_nosazi"],
+            displayField: "Code_nosazi",
+            exactMatch: false,
+            outFields: ["*"],
+            name: "عرصه",
+            placeholder: "کد نوسازی را وارد کنید...",
+        }),
+    ];
 }
 
-// Initialize Map
+// Initialization
 async function initializeMap() {
     try {
-        await view.when();
+        // Wait for <arcgis-map> to create its MapView
+        await viewElement.viewOnReady();
 
-        // Load Operational Layers
-        await Promise.all([
-            landParcelLayer.load(),
-            urbanAreaBoundaryLayer.load(),
-        ]);
-
-        console.log("Map initialized successfully.");
-        console.log("Operational layers loaded successfully.");
-
-        // Set Initial Extent
-        const initialExtent = landParcelLayer.fullExtent;
-
-        if (initialExtent) {
-            await view.goTo(initialExtent);
-        }
-
-        // Add Home Widget
-        const homeWidget = new Home({
-            view,
-            viewpoint: {
-                targetGeometry: initialExtent,
-            },
-        });
-        view.ui.add(homeWidget, "top-left");
-        
-
-        // Add LayerList Widget
-        const layerListWidget = new LayerList({
-            view,            
-        });
-
-        // Add LayerList Expand
-        const layerListExpand = new Expand({
-            view,
-         content: layerListWidget,
-            expandIcon: "layers",
-            expandTooltip: "Layer List",
-            group: "top-right",
-        });        
-        view.ui.add(layerListExpand, "top-right");
-
-        // Feature Information Panel Close Button
-        const closeFeatureInfoButton = document.getElementById("closeFeatureInfo");
-
-        closeFeatureInfoButton.addEventListener("click", () => {
-            clearSelectedFeature();
-        });
-
-        // Feature Identification Click Event
-        view.on("click", identifyFeature);
-
+        addOperationalLayers();
+        await loadOperationalLayers();
+        await setInitialExtent();
+        configureSearch();
     } catch (error) {
         console.error("Map initialization failed:", error);
     }
 }
 
-initializeMap();
+await initializeMap();
 
-export {
-    map,
-    view,
-    landParcelLayer,
-    urbanAreaBoundaryLayer,   
-};
+export { viewElement, landParcelLayer, urbanAreaBoundaryLayer };
