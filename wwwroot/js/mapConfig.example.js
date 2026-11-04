@@ -158,10 +158,12 @@ const mapConfig = {
                         {
                             name: "Masahat",
                             label: "مساحت",
+                            format: { digitSeparator: true, places: 2 }
                         },
                         {
                             name: "Frequency",
                             label: "محیط",
+                            format: { digitSeparator: true, places: 2 }
                         },
                     ],
                 },
@@ -172,6 +174,7 @@ const mapConfig = {
                         {
                             name: "Parvaneh",
                             label: "قیمت پایه منطقه",
+                            format: { digitSeparator: true,}
                         },
                     ],
                 },

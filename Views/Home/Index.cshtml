@@ -2,83 +2,35 @@
     ViewData["Title"] = "Map Viewer";
 }
 
-<div id="mapView"
-     class="map-view"
-     role="application"
-     aria-label="Interactive WebGIS map">
-</div>
+<arcgis-map id="mapView"
+            class="map-view"
+            role="application"
+            aria-label="Interactive WebGIS map">
 
-<!-- Feature Information Panel -->
-<aside id="featureInfoPanel"
-       class="feature-info-panel"
-       aria-labelledby="featureInfoTitle"
-       aria-live="polite"
-       hidden>
+    <!-- Top Left -->
+    <arcgis-zoom slot="top-left"></arcgis-zoom>
+    <arcgis-home id="homeWidget" slot="top-left"></arcgis-home>
 
-    <!-- Panel Header -->
-    <div class="feature-panel-header">
+    <!-- Top Right: Layer List -->
+    <arcgis-expand slot="top-right"
+                   group="top-right"
+                   mode="floating"
+                   expand-icon="layers"
+                   expand-tooltip="Layer List">
+        <arcgis-layer-list></arcgis-layer-list>
+    </arcgis-expand>
 
-        <div class="feature-panel-header-icon">
-            <i class="bi bi-map"></i>
-        </div>
+    <!-- Top Right: Search (sources are configured in map.js) -->
+    <arcgis-expand slot="top-right"
+                   group="top-right"
+                   mode="floating"
+                   expand-icon="search"
+                   expand-tooltip="جستجوی سریع">
+        <arcgis-search id="parcelSearch"></arcgis-search>
+    </arcgis-expand>
 
-        <div class="feature-panel-header-title">
-            <h5 id="featureInfoTitle">
-                اطلاعات عارضه
-            </h5>
-            <span id="featureInfoSubTitle"
-                  class="feature-panel-subtitle">
-                اطلاعات عارضه انتخاب‌شده
-            </span>
-        </div>
-
-        <button id="closeFeatureInfo"
-                type="button"
-                class="feature-panel-close"
-                aria-label="بستن پنل">
-            <i class="bi bi-x-lg"></i>           
-        </button>
-
-    </div>
-
-    <!-- Panel Body -->
-    <div class="feature-panel-body">
-
-        <!-- Property Summary -->
-        <div class="property-summary-card">
-
-            <div class="property-summary-content">
-
-                <span class="property-summary-label">
-                    لایه انتخاب‌شده
-                </span>
-
-                <h4 id="featureLayerTitle">
-                    قطعه عارضه
-                </h4>
-
-                <div class="unique-code">
-                    <span id="uniqCodeLabel">شناسه عارضه:</span>
-                    <strong id="uniqCodeName">—</strong>
-                </div>
-
-            </div>
-
-            <div class="property-summary-icon">                
-                <i class="bi bi-map-fill"></i>
-            </div>
-
-        </div>
-
-        <!-- Feature Attributes -->
-        <div id="featureInfoContent"
-             class="feature-info-content">
-        </div>
-
-    </div>
-
-</aside>
+</arcgis-map>
 
 @section Scripts {
-    <script type="module" src="~/js/map.js"></script>   
+    <script type="module" src="~/js/map.js" asp-append-version="true"></script>
 }
