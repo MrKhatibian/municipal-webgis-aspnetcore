@@ -7,14 +7,14 @@ const [FeatureLayer, LayerSearchSource, Viewpoint] = await $arcgis.import([
 ]);
 
 // DOM references
-const viewElement = document.getElementById("mapView");
-const homeElement = document.getElementById("homeWidget");
-const searchElement = document.getElementById("parcelSearch");
+const view = document.getElementById("mapView");
+const home = document.getElementById("homeWidget");
+const search = document.getElementById("parcelSearch");
 
 // Map configuration (set before the component finishes initializing)
-viewElement.basemap = mapConfig.map.basemap;
-viewElement.center = mapConfig.view.center;
-viewElement.zoom = mapConfig.view.zoom;
+view.basemap = mapConfig.map.basemap;
+view.center = mapConfig.view.center;
+view.zoom = mapConfig.view.zoom;
 
 // Popup template (built from mapConfig.featureInfoGroups)
 function buildPopupTemplate(layerConfig) {
@@ -22,7 +22,7 @@ function buildPopupTemplate(layerConfig) {
 
     return {
         title: `${layerConfig.title} (${label}: \u2066{${name}}\u2069)`, // for LtR
-        outFields: layerConfig.outFields,
+        outFields: layerConfig.outFields,        
         content: layerConfig.featureInfoGroups.map(group => ({
             type: "fields",
             title: group.title,
@@ -54,7 +54,7 @@ const operationalLayers = [urbanAreaBoundaryLayer, landParcelLayer];
 // Initialization steps
 function addOperationalLayers() {
     // The component already owns the Map instance
-    viewElement.map.addMany(operationalLayers);
+    view.map.addMany(operationalLayers);
 }
 
 async function loadOperationalLayers() {
@@ -80,29 +80,42 @@ async function setInitialExtent() {
         return;
     }
 
-    await viewElement.goTo(initialExtent, { animate: false });
+    await view.goTo(initialExtent, { animate: false });
 
     // Home button returns to the same extent
-    homeElement.viewpoint = new Viewpoint({
+    home.viewpoint = new Viewpoint({
         targetGeometry: initialExtent,
     });
 }
 
-function configureSearch() {
+async function configureSearch() {
     // Sources are objects, so they are set from JS.
     // Selecting a result zooms to it and opens the layer's popup.
-    searchElement.includeDefaultSources = false;
-    searchElement.searchAllEnabled = false;
-    searchElement.sources = [
-        new LayerSearchSource({
+    await search.componentOnReady();
+
+    search.includeDefaultSourcesDisabled = true;
+    search.allPlaceholder = "جستجو در لایه‌های نقشه...";    
+    search.locationDisabled = true;
+    search.sources = [
+        {
             layer: landParcelLayer,
             searchFields: ["Code_nosazi"],
+            suggestionTemplate: "{Code_nosazi}",
             displayField: "Code_nosazi",
             exactMatch: false,
             outFields: ["*"],
             name: "عرصه",
             placeholder: "کد نوسازی را وارد کنید...",
-        }),
+        },
+        {
+            layer: urbanAreaBoundaryLayer,
+            searchFields: ["OBJECTID"],
+            suggestionTemplate: "{OBJECTID}",
+            exactMatch: false,
+            outFields: ["*"],
+            name: "محدوده شهر",            
+            placeholder: "کد محدوده را وارد کنید...",
+        },       
     ];
 }
 
@@ -110,8 +123,8 @@ function configureSearch() {
 async function initializeMap() {
     try {
         // Wait for <arcgis-map> to create its MapView
-        await viewElement.viewOnReady();
-
+        await view.viewOnReady();       
+        
         addOperationalLayers();
         await loadOperationalLayers();
         await setInitialExtent();
@@ -123,4 +136,4 @@ async function initializeMap() {
 
 await initializeMap();
 
-export { viewElement, landParcelLayer, urbanAreaBoundaryLayer };
+export { view, landParcelLayer, urbanAreaBoundaryLayer };
