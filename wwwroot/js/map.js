@@ -11,6 +11,25 @@ const view = document.getElementById("mapView");
 const home = document.getElementById("homeWidget");
 const search = document.getElementById("parcelSearch");
 
+// Measurement DOM references
+const measurementExpandElement =
+    document.getElementById("measurementExpand");
+
+const measurementTabsElement =
+    document.getElementById("measurementTabs");
+
+const distanceMeasurementElement =
+    document.getElementById("distanceMeasurement");
+
+const areaMeasurementElement =
+    document.getElementById("areaMeasurement");
+
+const clearDistanceMeasurementButton =
+    document.getElementById("clearDistanceMeasurement");
+
+const clearAreaMeasurementButton =
+    document.getElementById("clearAreaMeasurement");
+
 // Map configuration (set before the component finishes initializing)
 view.basemap = mapConfig.map.basemap;
 view.center = mapConfig.view.center;
@@ -124,6 +143,42 @@ async function configureSearch() {
     ];
 }
 
+function configureMeasurement() {
+
+    // Distance Measurement Configuration
+    distanceMeasurementElement.unit = "meters";
+
+    distanceMeasurementElement.unitOptions = [
+        "meters",
+        "kilometers",
+    ];
+
+    // Area Measurement Configuration
+    areaMeasurementElement.unit = "square-meters";
+
+    areaMeasurementElement.unitOptions = [
+        "square-meters",
+        "hectares",
+        "square-kilometers",
+    ];
+
+    // Clear Distance Measurement
+    clearDistanceMeasurementButton.addEventListener(
+        "click",
+        async () => {
+            await distanceMeasurementElement.clear();
+        }
+    );
+
+    // Clear Area Measurement
+    clearAreaMeasurementButton.addEventListener(
+        "click",
+        async () => {
+            await areaMeasurementElement.clear();
+        }
+    );
+}
+
 // Initialization
 async function initializeMap() {
     try {
@@ -133,7 +188,10 @@ async function initializeMap() {
         addOperationalLayers();
         await loadOperationalLayers();
         await setInitialExtent();
+
         configureSearch();
+        configureMeasurement();
+
     } catch (error) {
         console.error("Map initialization failed:", error);
     }

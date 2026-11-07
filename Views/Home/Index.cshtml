@@ -31,6 +31,90 @@
         <arcgis-search id="parcelSearch"></arcgis-search>
     </arcgis-expand>
 
+    <!-- Measurement Expand -->
+    <arcgis-expand id="measurementExpand"
+                   slot="top-right"
+                   group="top-right"
+                   mode="floating"
+                   expand-icon="measure"
+                   expand-tooltip="اندازه‌گیری">
+
+        <calcite-tabs id="measurementTabs"
+                      layout="center"
+                      position="top">
+
+            <!-- Tab Navigation -->
+            <calcite-tab-nav slot="title-group">
+
+                <calcite-tab-title tab="distance" selected>
+                    @* فاصله *@
+                    <calcite-icon icon="measure-line" />
+                </calcite-tab-title>
+
+                <calcite-tab-title tab="area">
+                    <calcite-icon icon="measure-area" />
+                    @* مساحت *@
+                </calcite-tab-title>
+
+            </calcite-tab-nav>
+
+            <!-- Distance Tab -->
+            <calcite-tab tab="distance" selected>
+
+                <div class="measurement-tab-content">
+
+                    <div class="measurement-tab-header">
+
+                        <span>اندازه‌گیری فاصله</span>
+
+                        <calcite-button id="clearDistanceMeasurement"
+                                        appearance="transparent"
+                                        kind="danger"
+                                        scale="s"
+                                        icon-start="trash"
+                                        title="پاک کردن اندازه‌گیری فاصله"
+                                        aria-label="پاک کردن اندازه‌گیری فاصله">
+                        </calcite-button>
+
+                    </div>
+
+                    <arcgis-distance-measurement-2d id="distanceMeasurement">
+                    </arcgis-distance-measurement-2d>
+
+                </div>
+
+            </calcite-tab>
+
+            <!-- Area Tab -->
+            <calcite-tab tab="area">
+
+                <div class="measurement-tab-content">
+
+                    <div class="measurement-tab-header">
+
+                        <span>اندازه‌گیری مساحت</span>
+
+                        <calcite-button id="clearAreaMeasurement"
+                                        appearance="transparent"
+                                        kind="danger"
+                                        scale="s"
+                                        icon-start="trash"
+                                        title="پاک کردن اندازه‌گیری مساحت"
+                                        aria-label="پاک کردن اندازه‌گیری مساحت">
+                        </calcite-button>
+
+                    </div>
+
+                    <arcgis-area-measurement-2d id="areaMeasurement">
+                    </arcgis-area-measurement-2d>
+
+                </div>
+
+            </calcite-tab>
+
+        </calcite-tabs>
+
+    </arcgis-expand>   
 </arcgis-map>
 
 @section Scripts {
