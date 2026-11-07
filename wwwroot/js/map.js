@@ -91,30 +91,35 @@ async function setInitialExtent() {
 async function configureSearch() {
     // Sources are objects, so they are set from JS.
     // Selecting a result zooms to it and opens the layer's popup.
-    await search.componentOnReady();
+    await search.componentOnReady();    
 
-    search.includeDefaultSourcesDisabled = true;
-    search.allPlaceholder = "جستجو در لایه‌های نقشه...";    
-    search.locationDisabled = true;
+    search.includeDefaultSourcesDisabled = mapConfig.search.includeDefaultSourcesDisabled;
+    search.allPlaceholder = mapConfig.search.allPlaceholder;
+    search.locationDisabled = mapConfig.search.locationDisabled;
+
+    // Search Layers Sources
+    const searchSourceLandParcel = mapConfig.layers.landParcel.searchSource;
+    const searchSourceUrbanAreaBounddary = mapConfig.layers.urbanAreaBoundary.searchSource;
+
     search.sources = [
         {
             layer: landParcelLayer,
-            searchFields: ["Code_nosazi"],
-            suggestionTemplate: "{Code_nosazi}",
-            displayField: "Code_nosazi",
-            exactMatch: false,
-            outFields: ["*"],
-            name: "عرصه",
-            placeholder: "کد نوسازی را وارد کنید...",
+            searchFields: searchSourceLandParcel.searchFields,
+            suggestionTemplate: searchSourceLandParcel.suggestionTemplate,
+            displayField: searchSourceLandParcel.displayField,
+            exactMatch: searchSourceLandParcel.exactMatch,
+            outFields: searchSourceLandParcel.outFields,
+            name: searchSourceLandParcel.name,
+            placeholder: searchSourceLandParcel.placeholder,
         },
         {
             layer: urbanAreaBoundaryLayer,
-            searchFields: ["OBJECTID"],
-            suggestionTemplate: "{OBJECTID}",
-            exactMatch: false,
-            outFields: ["*"],
-            name: "محدوده شهر",            
-            placeholder: "کد محدوده را وارد کنید...",
+            searchFields: searchSourceUrbanAreaBounddary.searchFields,
+            suggestionTemplate: searchSourceUrbanAreaBounddary.suggestionTemplate,
+            exactMatch: searchSourceUrbanAreaBounddary.exactMatch,
+            outFields: searchSourceUrbanAreaBounddary.outFields,
+            name: searchSourceUrbanAreaBounddary.name,
+            placeholder: searchSourceUrbanAreaBounddary.placeholder,
         },       
     ];
 }
