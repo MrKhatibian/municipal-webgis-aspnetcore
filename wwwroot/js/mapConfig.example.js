@@ -104,6 +104,28 @@ const mapConfig = {
 
     /**
      * --------------------------------------------------------
+     * Search Configuration
+     * --------------------------------------------------------
+     *
+     * Configure the Esri Search Component.
+     *
+     * Each source references an operational layer by its
+     * configuration key from the layers section.
+     */
+
+    search: {
+        // Disable Esri's default search sources.
+        includeDefaultSourcesDisabled: true,
+
+        // Placeholder displayed when searching across sources.
+        allPlaceholder: "جستجو در لایه‌های نقشه...",
+
+        // Disable location search.
+        locationDisabled: true,
+    },
+
+    /**
+     * --------------------------------------------------------
      * Operational Layers Configuration
      * --------------------------------------------------------
      *
@@ -179,6 +201,19 @@ const mapConfig = {
                     ],
                 },
             ],
+
+            // Land Parcel Search (عرصه)
+            searchSource: {
+                searchFields: ["Code_nosazi"],
+                suggestionTemplate: "{Code_nosazi}",
+                displayField: "Code_nosazi",
+
+                exactMatch: false,
+                outFields: ["*"],
+
+                name: "عرصه",
+                placeholder: "کد نوسازی را وارد کنید...",
+            }
         },
 
         // Urban Area Boundary Layer (محدوده شهر)
@@ -206,6 +241,18 @@ const mapConfig = {
                     ],
                 },
             ],
+
+            // Urban Area Boundary Search (محدوده شهر)
+            searchSource: {
+                searchFields: ["OBJECTID"],
+                suggestionTemplate: "{OBJECTID}",
+
+                exactMatch: false,
+                outFields: ["*"],
+
+                name: "محدوده شهر",
+                placeholder: "کد محدوده را وارد کنید...",
+            }
         },
 
         // Example: Building Layer (اعیان)
